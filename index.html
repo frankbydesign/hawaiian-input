@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hawaiian Language Input Library</title>
+  <meta name="description" content="JavaScript library enabling Hawaiian characters (ā ē ī ō ū, ʻokina) in any browser without extensions."/>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --color-primary: #0f766e;
+      --color-primary-light: #14b8a6;
+      --color-primary-dark: #134e4a;
+      --color-surface: #ffffff;
+      --color-surface-alt: #f8fafc;
+      --color-border: #e2e8f0;
+      --color-border-strong: #cbd5e1;
+      --color-text: #0f172a;
+      --color-text-muted: #64748b;
+      --color-success: #059669;
+      --color-code-bg: #1e293b;
+      --color-code-text: #e2e8f0;
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    * { box-sizing: border-box; }
+    
+    body {
+      margin: 0;
+      font-family: "Source Sans 3", system-ui, sans-serif;
+      color: var(--color-text);
+      background: var(--color-surface-alt);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      padding: 4rem 0 3rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+      letter-spacing: -0.02em;
+    }
+
+    .hero .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin: 0 0 2rem 0;
+      max-width: 550px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero .quick-demo {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      max-width: 480px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .hero .quick-demo h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .hero .demo-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--color-text);
+      font-size: 1rem;
+      font-family: inherit;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero .demo-input:focus {
+      outline: none;
+      border-color: var(--color-primary-light);
+      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.3);
+    }
+
+    .hero .hint {
+      font-size: 0.875rem;
+      opacity: 0.85;
+      margin: 0;
+    }
+
+    /* Main */
+    main { padding: 3rem 0; }
+
+    .section {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      border: 1px solid var(--color-border);
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary-dark);
+      margin: 0 0 1rem 0;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .text-muted { color: var(--color-text-muted); }
+
+    /* Problem/Solution */
+    .problem-solution {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    @media (max-width: 700px) {
+      .problem-solution { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+    }
+    .card.problem { border-left: 4px solid #ef4444; }
+    .card.solution { border-left: 4px solid var(--color-success); }
+    .card p { margin: 0.5rem 0 0 0; }
+
+    /* Key Guide */
+    .key-guide {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .key-item {
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+    }
+
+    .key-item h4 {
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+      color: var(--color-primary-dark);
+    }
+
+    .key-item p {
+      margin: 0 0 0.75rem 0;
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+    }
+
+    .key-sequence {
+      font-family: 'SF Mono', Monaco, monospace;
+      background: var(--color-code-bg);
+      color: var(--color-code-text);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .result {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-left: 0.5rem;
+    }
+
+    /* Demo */
+    .demo-area {
+      background: var(--color-surface-alt);
+      border: 2px dashed var(--color-border-strong);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .demo-field { margin-bottom: 1.25rem; }
+    .demo-field:last-child { margin-bottom: 0; }
+
+    .demo-field label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+    }
+
+    .demo-field input,
+    .demo-field textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .demo-field input:focus,
+    .demo-field textarea:focus {
+      outline: none;
+      border-color: var(--color-primary-light);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+    }
+
+    .demo-field textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Code */
+    .code-block { margin: 1.5rem 0; }
+
+    .code-header {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: 0.6rem 1rem;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      font-weight: 500;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .copy-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+    .code-content {
+      background: var(--color-code-bg);
+      color: var(--color-code-text);
+      padding: 1.25rem;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      overflow-x: auto;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      white-space: pre;
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 3rem;
+      text-align: center;
+    }
+    .footer strong { color: var(--color-primary-light); }
+    .footer p { margin: 0.5rem 0; }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="container">
+      <h1>Hawaiian Language Input Library</h1>
+      <p class="subtitle">Type Hawaiian diacriticals in any browser.<br>No extensions to install, works on any device.</p>
+      
+      <div class="quick-demo">
+        <h3>Try it now:</h3>
+        <input type="text" class="demo-input" placeholder="Type: Hawai`'i" aria-label="Demo input">
+        <p class="hint">
+          <em>backtick</em> then vowel → macron: <code>`a</code> → ā<br>
+          <em>backslash</em> then vowel → uppercase: <code>\a</code> → Ā<br>
+          <em>backtick</em> then <em>apostrophe</em> → ʻokina: <code>`'</code> → ʻ<br>
+          <strong>OR</strong> hold <code>Ctrl</code> or <code>Alt</code> + vowel
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      
+      <section class="section">
+        <h2>Why This Matters</h2>
+        <p>Hawaiian language carries identity, history, and culture in every word. When students type <strong>Hawaiʻi</strong> with a proper ʻokina, or <strong>kūpuna</strong> with the kahakō that changes its meaning, they're not just entering text. They're practicing the authentic written form of ʻŌlelo Hawaiʻi.</p>
+        <p>If you're building a website, web-based platform, or any system that captures Hawaiian text input, adding this library to your HTML ensures your users can type authentic Hawaiian diacriticals without needing to install anything or ask IT for help.</p>
+      </section>
+
+      <section class="section">
+        <h2>How to Type Hawaiian Characters</h2>
+        <p class="text-muted">Two input methods. Use whichever feels natural.</p>
+        
+        <h3 style="margin-top: 1.5rem; font-size: 1rem; color: var(--color-primary);">Method 1: Dead Keys (matches <a href="https://chromewebstore.google.com/detail/hkelkgkplogpghhhajjpkabhjkfhojlh" target="_blank" rel="noopener">Chrome Extension</a>)</h3>
+        <div class="key-guide">
+          <div class="key-item">
+            <h4>Lowercase Macrons</h4>
+            <p>Backtick + lowercase vowel</p>
+            <div>
+              <code class="key-sequence">`a</code><span class="result">ā</span><br>
+              <code class="key-sequence">`e</code><span class="result">ē</span><br>
+              <code class="key-sequence">`i</code><span class="result">ī</span><br>
+              <code class="key-sequence">`o</code><span class="result">ō</span><br>
+              <code class="key-sequence">`u</code><span class="result">ū</span>
+            </div>
+          </div>
+          
+          <div class="key-item">
+            <h4>Uppercase Macrons</h4>
+            <p>Backslash + vowel</p>
+            <div>
+              <code class="key-sequence">\a</code><span class="result">Ā</span><br>
+              <code class="key-sequence">\e</code><span class="result">Ē</span><br>
+              <code class="key-sequence">\i</code><span class="result">Ī</span><br>
+              <code class="key-sequence">\o</code><span class="result">Ō</span><br>
+              <code class="key-sequence">\u</code><span class="result">Ū</span>
+            </div>
+          </div>
+          
+          <div class="key-item">
+            <h4>ʻOkina</h4>
+            <p>Backtick + apostrophe</p>
+            <div>
+              <code class="key-sequence">`'</code><span class="result">ʻ</span>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 2rem; font-size: 1rem; color: var(--color-primary);">Method 2: Modifier Keys (matches Windows/macOS native input)</h3>
+        <div class="key-guide">
+          <div class="key-item">
+            <h4>Macrons & ʻOkina</h4>
+            <p>Ctrl or Alt/Option + vowel or apostrophe</p>
+            <div>
+              <code class="key-sequence">Ctrl+a</code><span class="result">ā</span> · <code class="key-sequence">Ctrl+A</code><span class="result">Ā</span><br>
+              <code class="key-sequence">Alt+e</code><span class="result">ē</span> · <code class="key-sequence">Alt+E</code><span class="result">Ē</span><br>
+              <code class="key-sequence">Ctrl+'</code><span class="result">ʻ</span>
+            </div>
+            <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--color-text-muted);">Case is preserved from your input.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Interactive Demo</h2>
+        <p class="text-muted">Test the input below:</p>
+        
+        <div class="demo-area">
+          <div class="demo-field">
+            <label for="demo1">Hawaiian place names:</label>
+            <input type="text" id="demo1" placeholder="Try: Hawai`'i, M\anoa, or Ctrl+a for ā">
+          </div>
+          
+          <div class="demo-field">
+            <label for="demo2">Longer text:</label>
+            <textarea id="demo2" placeholder="ʻŌlelo Hawaiʻi..."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Integration</h2>
+        <p>Adding Hawaiian input to your website takes two steps:</p>
+        
+        <p><strong>Step 1:</strong> Download the <code>hawaiian-input.js</code> file and save it in the same folder as your HTML file (or wherever you keep your website's JavaScript files).</p>
+        
+        <p><strong>Step 2:</strong> Add these two lines to your HTML file, just before the closing <code>&lt;/body&gt;</code> tag:</p>
+        
+        <div class="code-block">
+          <div class="code-header">
+            HTML
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-content">&lt;script src="hawaiian-input.js"&gt;&lt;/script&gt;
+&lt;script&gt;HawaiianInput.install();&lt;/script&gt;</div>
+        </div>
+
+        <p>That's it. Every text input and textarea on your page will now support Hawaiian character input. Users can start typing immediately.</p>
+
+        <p><strong>Optional:</strong> If you need to customize the behavior (for example, to disable Hawaiian input on certain fields), you can pass options:</p>
+
+        <div class="code-block">
+          <div class="code-header">
+            With Options
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-content">HawaiianInput.install({
+  deadKeyStrict: true,            // Hide backtick while composing
+  enableContentEditable: false,   // Disable for rich text editors
+  ignoreSelector: '.no-hawaiian'  // Skip specific elements
+});</div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <section class="section" style="max-width: 1100px; margin: 0 auto 2rem; padding: 1.5rem 2rem;">
+    <h2 style="font-size: 1.25rem;">Notes</h2>
+    <p class="text-muted">This library supports multiple input methods so users can type Hawaiian characters however they've learned, whether from the DOE Chrome Extension, native OS keyboards, or other tools. If you have questions or need a customized implementation, contact frank [at] centerpointcorp.com.</p>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <h3 style="font-size: 1rem; margin: 0 0 0.75rem 0; opacity: 0.9;">Credits</h3>
+      <p style="margin: 0.25rem 0;"><strong>Patrick Karjala</strong> · UH Mānoa College of Education</p>
+      <p style="margin: 0.25rem 0;"><strong>Frank Brockmann</strong> · Educational Technologist & Researcher</p>
+      <p style="margin: 1rem 0 0 0; font-size: 0.85rem; opacity: 0.7;"><a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener" style="color: inherit;">MIT License</a></p>
+    </div>
+  </footer>
+
+  <script>
+  /**
+   * Hawaiian Language Input Library v1.2.0
+   * Supports three input methods:
+   * 1. Backtick + vowel → lowercase macron, backtick + ' → ʻokina
+   * 2. Backslash + vowel → uppercase macron
+   * 3. Ctrl/Alt/Option + vowel/apostrophe → macron/ʻokina (case preserved)
+   */
+  (function(){
+    "use strict";
+    
+    const VOWELS_LOWER = new Set(["a","e","i","o","u"]);
+    const VOWELS_UPPER = new Set(["A","E","I","O","U"]);
+    const VOWELS_ALL = new Set(["a","e","i","o","u","A","E","I","O","U"]);
+    const MACRONS = {a:"ā",e:"ē",i:"ī",o:"ō",u:"ū",A:"Ā",E:"Ē",I:"Ī",O:"Ō",U:"Ū"};
+    const OKINA = "ʻ";
+    const DEAD_KEY = "`";
+    const UPPER_KEY = "\\";
+    
+    let cfg = {
+      deadKeyStrict: false,
+      enableInputs: true,
+      enableTextareas: true,
+      enableContentEditable: true,
+      ignoreSelector: 'input[type="password"],input[type="email"],[data-no-hawaiian]'
+    };
+    
+    let composing = false;
+    let backtickArmed = false, backslashArmed = false;
+    let suppressedBacktick = false, suppressedBackslash = false;
+    
+    function install(opts = {}) {
+      cfg = { ...cfg, ...opts };
+      document.addEventListener("compositionstart", () => { composing = true; reset(); }, true);
+      document.addEventListener("compositionend", () => { composing = false; reset(); }, true);
+      document.addEventListener("keydown", onKeyDown, true);
+      document.addEventListener("beforeinput", onBeforeInput, true);
+      document.addEventListener("input", onInput, true);
+      document.addEventListener("focusin", reset, true);
+    }
+    
+    function reset() { 
+      backtickArmed = false; backslashArmed = false; 
+      suppressedBacktick = false; suppressedBackslash = false; 
+    }
+    
+    function shouldHandle(e) {
+      const t = e.target;
+      if (!t) return false;
+      if (t.tagName === "INPUT") {
+        if (!cfg.enableInputs) return false;
+        const type = (t.type || "text").toLowerCase();
+        if (!["text","search","tel"].includes(type)) return false;
+      } else if (t.tagName === "TEXTAREA") {
+        if (!cfg.enableTextareas) return false;
+      } else if (t.isContentEditable) {
+        if (!cfg.enableContentEditable) return false;
+      } else {
+        return false;
+      }
+      if (cfg.ignoreSelector && t.matches && t.matches(cfg.ignoreSelector)) return false;
+      return true;
+    }
+    
+    // Handle Ctrl/Alt + vowel/apostrophe
+    function onKeyDown(e) {
+      if (composing || !shouldHandle(e)) return;
+      
+      const hasModifier = e.ctrlKey || e.altKey;
+      if (!hasModifier) return;
+      
+      const key = e.key;
+      
+      // Modifier + apostrophe → ʻokina
+      if (key === "'" || key === "'") {
+        e.preventDefault();
+        insertText(e.target, OKINA, 0);
+        return;
+      }
+      
+      // Modifier + vowel → macron (case preserved)
+      if (VOWELS_ALL.has(key)) {
+        e.preventDefault();
+        insertText(e.target, MACRONS[key], 0);
+        return;
+      }
+    }
+    
+    function onBeforeInput(e) {
+      if (composing || !shouldHandle(e)) return;
+      const data = e.data || "";
+      const t = e.target;
+      
+      if (e.inputType?.startsWith("delete")) { reset(); return; }
+      if (data.length !== 1) return;
+      
+      // Backtick pressed - arm for lowercase macron or ʻokina
+      if (data === DEAD_KEY) {
+        if (cfg.deadKeyStrict) { e.preventDefault(); suppressedBacktick = true; }
+        backtickArmed = true;
+        return;
+      }
+      
+      // Backslash pressed - arm for uppercase macron
+      if (data === UPPER_KEY) {
+        if (cfg.deadKeyStrict) { e.preventDefault(); suppressedBackslash = true; }
+        backslashArmed = true;
+        return;
+      }
+      
+      // Backtick armed: check for vowel or apostrophe
+      if (backtickArmed) {
+        if (data === "'" || data === "\u2019") {
+          e.preventDefault();
+          insertText(t, OKINA, suppressedBacktick ? 0 : 1);
+          reset(); return;
+        }
+        if (VOWELS_LOWER.has(data)) {
+          e.preventDefault();
+          insertText(t, MACRONS[data], suppressedBacktick ? 0 : 1);
+          reset(); return;
+        }
+        if (data === " ") {
+          e.preventDefault();
+          insertText(t, DEAD_KEY, suppressedBacktick ? 0 : 1);
+          reset(); return;
+        }
+        if (suppressedBacktick) {
+          e.preventDefault();
+          insertText(t, DEAD_KEY + data, 0);
+        }
+        reset();
+      }
+      
+      // Backslash armed: check for vowel (produces uppercase)
+      if (backslashArmed) {
+        if (VOWELS_ALL.has(data)) {
+          e.preventDefault();
+          insertText(t, MACRONS[data.toUpperCase()], suppressedBackslash ? 0 : 1);
+          reset(); return;
+        }
+        if (data === " ") {
+          e.preventDefault();
+          insertText(t, UPPER_KEY, suppressedBackslash ? 0 : 1);
+          reset(); return;
+        }
+        if (suppressedBackslash) {
+          e.preventDefault();
+          insertText(t, UPPER_KEY + data, 0);
+        }
+        reset();
+      }
+    }
+    
+    function onInput(e) {
+      if (composing || !shouldHandle(e)) return;
+      const t = e.target;
+      
+      if (t.tagName === "INPUT" || t.tagName === "TEXTAREA") {
+        const v = t.value, c = t.selectionStart;
+        if (typeof c !== "number" || c < 2) return;
+        
+        const prev = v[c-2], cur = v[c-1];
+        
+        // Backtick + apostrophe or lowercase vowel
+        if (prev === DEAD_KEY) {
+          if (cur === "'" || cur === "\u2019") return replaceInField(t, c-2, c, OKINA);
+          if (VOWELS_LOWER.has(cur)) return replaceInField(t, c-2, c, MACRONS[cur]);
+          if (cur === " ") return replaceInField(t, c-2, c, DEAD_KEY);
+        }
+        
+        // Backslash + vowel → uppercase macron
+        if (prev === UPPER_KEY) {
+          if (VOWELS_ALL.has(cur)) return replaceInField(t, c-2, c, MACRONS[cur.toUpperCase()]);
+          if (cur === " ") return replaceInField(t, c-2, c, UPPER_KEY);
+        }
+      }
+    }
+    
+    function insertText(el, text, deleteBack) {
+      if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+        const start = el.selectionStart - deleteBack;
+        el.setRangeText(text, start, el.selectionStart, "end");
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+      } else if (el.isContentEditable) {
+        const sel = window.getSelection();
+        if (!sel.rangeCount) return;
+        const range = sel.getRangeAt(0);
+        if (deleteBack > 0 && range.startOffset >= deleteBack) {
+          range.setStart(range.startContainer, range.startOffset - deleteBack);
+        }
+        range.deleteContents();
+        range.insertNode(document.createTextNode(text));
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+    
+    function replaceInField(el, start, end, text) {
+      el.setRangeText(text, start, end, "end");
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    
+    window.HawaiianInput = { install };
+  })();
+
+  HawaiianInput.install();
+
+  function copyCode(btn) {
+    const code = btn.closest('.code-block').querySelector('.code-content').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+  }
+  </script>
+</body>
+</html>

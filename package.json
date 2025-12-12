@@ -1,0 +1,33 @@
+{
+  "name": "hawaiian-input",
+  "version": "1.2.0",
+  "description": "JavaScript library for Hawaiian language character input (macrons and ʻokina) without browser extensions",
+  "main": "hawaiian-input.js",
+  "scripts": {
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "keywords": [
+    "hawaiian",
+    "olelo-hawaii",
+    "language",
+    "input",
+    "macron",
+    "kahako",
+    "okina",
+    "diacritical",
+    "keyboard",
+    "accessibility",
+    "education",
+    "kaiapuni"
+  ],
+  "author": "Patrick Karjala, Frank Brockmann",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/frankbydesign/hawaiian-input.git"
+  },
+  "bugs": {
+    "url": "https://github.com/frankbydesign/hawaiian-input/issues"
+  },
+  "homepage": "https://frankbydesign.github.io/hawaiian-input/"
+}
